@@ -1,6 +1,7 @@
 import { generateJWT } from "@/lib/jwt";
 import { connectDb } from "@/lib/mongodb";
 import UserModel from "@/models/user.model";
+import { ApiResponse } from "@/types/api.types";
 import { RequestBody } from "@/types/user.types";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -13,7 +14,7 @@ export async function POST(req : NextRequest){
      let {name , email , password , mobile} = body
 
      if(!name || !email || !password ) {
-        return NextResponse.json(
+        return NextResponse.json<ApiResponse>(
             {
                success : false,
                message : "All fields are required"
@@ -28,10 +29,10 @@ export async function POST(req : NextRequest){
      })
 
      if(isExisted){
-        return NextResponse.json(
+        return NextResponse.json<ApiResponse>(
             {
                success : false,
-               message : "user already exists"
+               message : "user already exists" 
             },{
                 status : 409
             }
@@ -47,7 +48,7 @@ export async function POST(req : NextRequest){
 
      const token = generateJWT({userId : newUser._id});
 
-    const response =  NextResponse.json({
+     const response =  NextResponse.json<ApiResponse>({
         success : true,
         message : "user registered sucessfully",
         data : newUser
@@ -67,11 +68,17 @@ export async function POST(req : NextRequest){
 
    } catch (error) {
 
-    return NextResponse.json({
+    return NextResponse.json<ApiResponse>(
+      {
         success : false,
-        message : "Internal Server error"
+        message : "Internal Server error",
+        error : {
+         message : 
+         error instanceof Error ? error.message : "Unknown error"
+        }
     },{
         status : 500
     })
    }
 }
+

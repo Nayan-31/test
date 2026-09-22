@@ -15,6 +15,12 @@ export interface RequestBody{
   mobile : string;
 }
 
+export interface LoginBody{
+  email : string;
+  password : string;
+}
+
+
 export interface JWTpayload{
   userId : string;
   email ?: string;

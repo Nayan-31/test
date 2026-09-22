@@ -2,7 +2,14 @@ import { IUser } from '@/types/user.types'
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
 
-const userSchema = new mongoose.Schema<IUser>({
+
+// type UserData = Omit<IUser , "_id" | "comparePass" >
+
+interface IUserDocument extends Document , IUser {
+    comparePass(password:string):Promise<boolean>
+} //issey comparePass wali problem solve ho jayegi and omit se bhi ho jati hai 
+
+const userSchema = new mongoose.Schema<IUserDocument>({
     name : {
         type : String,
         trim : true,
@@ -39,7 +46,7 @@ userSchema.methods.comparePass = function(candidatePassword : string) : boolean 
     return bcrypt.compareSync(candidatePassword , this.password)
 }
 
-const UserModel = mongoose.models.User || mongoose.model("User", userSchema);
+const UserModel = mongoose.models.User || mongoose.model("User", userSchema); 
 export default UserModel;
 
 //ab maan ke chalte hai ki agar koi intern aaya hai jo yaha models me koi naya field add karta hai
